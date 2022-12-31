@@ -7,7 +7,7 @@ type gitHubClient struct {
 }
 
 type GitHubClient interface {
-	GetContributionsEachYears(ctx context.Context, userName string) (map[int]Contributions, error)
+	GetContributionsEachYears(ctx context.Context, userName string) ([]Contributions, error)
 }
 
 func NewGitHubClient(accessToken string) GitHubClient {

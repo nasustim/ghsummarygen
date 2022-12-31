@@ -2,6 +2,7 @@ package github_client
 
 import (
 	"context"
+	"sort"
 	"time"
 
 	"github.com/pkg/errors"
@@ -12,13 +13,14 @@ import (
 const DATETIME_LAYOUT_ISO8601 string = "2006-01-02T15:04:05+09:00"
 
 type Contributions struct {
+	Year                                int
 	TotalCommitContributions            int
 	TotalIssueContributions             int
 	TotalPullRequestContributions       int
 	TotalPullRequestReviewContributions int
 }
 
-func (gc *gitHubClient) GetContributionsEachYears(ctx context.Context, userName string) (map[int]Contributions, error) {
+func (gc *gitHubClient) GetContributionsEachYears(ctx context.Context, userName string) ([]Contributions, error) {
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: gc.AccessToken},
 	)
@@ -40,7 +42,7 @@ func (gc *gitHubClient) GetContributionsEachYears(ctx context.Context, userName 
 		},
 	)
 	if err != nil {
-		return map[int]Contributions{}, err
+		return nil, err
 	}
 	contributionYearsList := contributedYearsQuery.User.ContributionsCollection.ContributionYears
 
@@ -57,8 +59,8 @@ func (gc *gitHubClient) GetContributionsEachYears(ctx context.Context, userName 
 		} `graphql:"user(login: $userName)"`
 	}
 
-	r := make(map[int]Contributions, len(contributionYearsList))
-	for _, v := range contributionYearsList {
+	r := make([]Contributions, len(contributionYearsList))
+	for i, v := range contributionYearsList {
 		year := int(v)
 
 		var q ContributionsByYearQuery
@@ -72,7 +74,8 @@ func (gc *gitHubClient) GetContributionsEachYears(ctx context.Context, userName 
 			return nil, errors.Wrap(err, "failed to Query")
 		}
 
-		r[year] = Contributions{
+		r[i] = Contributions{
+			Year:                                year,
 			TotalCommitContributions:            int(q.User.ContributionsCollection.TotalCommitContributions),
 			TotalIssueContributions:             int(q.User.ContributionsCollection.TotalIssueContributions),
 			TotalPullRequestContributions:       int(q.User.ContributionsCollection.TotalPullRequestContributions),
@@ -80,5 +83,6 @@ func (gc *gitHubClient) GetContributionsEachYears(ctx context.Context, userName 
 		}
 	}
 
+	sort.Slice(r, func(i, j int) bool { return r[i].Year < r[j].Year })
 	return r, nil
 }
