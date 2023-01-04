@@ -38,10 +38,10 @@ func RenderContributionGraphEachYears(data []github_client.Contributions, output
 
 	}
 	err := plotutil.AddLinePoints(p,
-		"TotalCommitContributions", ptcc,
-		"TotalIssueContributions", ptic,
-		"TotalPullRequestContributions", ptprc,
-		"TotalPullRequestReviewContributions", ptprrc,
+		"commits", ptcc,
+		"issues", ptic,
+		"PRs", ptprc,
+		"reviews", ptprrc,
 	)
 	if err != nil {
 		panic(err)
