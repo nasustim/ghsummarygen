@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"math"
 
-	"github.com/nasustim/github-all-summary/pkg/github_client"
+	"github.com/nasustim/ghsummarygen/pkg/github_client"
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
 	"gonum.org/v1/plot/plotutil"

@@ -1,4 +1,4 @@
-module github.com/nasustim/github-all-summary
+module github.com/nasustim/ghsummarygen
 
 go 1.19
 

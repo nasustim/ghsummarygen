@@ -5,8 +5,8 @@ import (
 	"errors"
 	"flag"
 
-	"github.com/nasustim/github-all-summary/pkg/github_client"
-	"github.com/nasustim/github-all-summary/pkg/graph"
+	"github.com/nasustim/ghsummarygen/pkg/github_client"
+	"github.com/nasustim/ghsummarygen/pkg/graph"
 )
 
 type Args struct {
