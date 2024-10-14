@@ -2,4 +2,6 @@
 
 ### usage
 
-    $ go run cmd/main.go --user_name XXXXX --access_token XXXXXX
+```bash
+go run cmd/main.go --user_name XXXXX --access_token XXXXXX
+```

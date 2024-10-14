@@ -31,7 +31,7 @@ func (uc *createContributionGraph) Execute(ctx context.Context, accessToken stri
 		return err
 	}
 
-	err = graph.NewGraphClient().RenderContributionGraphEachYears(r, output)
+	err = graph.NewGraphClient().RenderContributionByYears(r, output)
 	if err != nil {
 		return err
 	}

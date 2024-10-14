@@ -2,6 +2,7 @@ package github
 
 import (
 	"context"
+	"slices"
 	"time"
 
 	"github.com/nasustim/ghsummarygen/internal/domain/model"
@@ -57,13 +58,7 @@ func (gc *gitHubClient) GetYearAccountStarted(ctx context.Context, username stri
 		return 0, errors.New("not found")
 	}
 
-	startYear := q.User.ContributionsCollection.ContributionYears[0]
-	for _, y := range q.User.ContributionsCollection.ContributionYears {
-		if startYear > y {
-			startYear = y
-		}
-	}
-	return int(startYear), nil
+	return int(slices.Min(q.User.ContributionsCollection.ContributionYears)), nil
 }
 
 func (gc *gitHubClient) GetContributions(ctx context.Context, userName string, startYear int, endYear int) ([]model.Contribution, error) {
@@ -73,24 +68,26 @@ func (gc *gitHubClient) GetContributions(ctx context.Context, userName string, s
 
 	client := gc.auth(ctx)
 
-	var q struct {
+	type Query struct {
 		User struct {
 			ContributionsCollection struct {
-				TotalCommitContributions            githubv4.Int
+				// TotalCommitContributions            githubv4.Int
 				TotalIssueContributions             githubv4.Int
 				TotalPullRequestContributions       githubv4.Int
 				TotalPullRequestReviewContributions githubv4.Int
 			} `graphql:"contributionsCollection(from: $yearFrom, to: $yearTo)"`
-		} `graphql:"user(login: $userName)"`
+		} `graphql:"user(login: $username)"`
 	}
 
 	yearLength := endYear - startYear + 1
 	r := make([]model.Contribution, 0, yearLength)
 	for year := startYear; year <= endYear; year++ {
+
+		var q Query
 		v := map[string]interface{}{
-			"userName": githubv4.String(userName),
-			"yearFrom": githubv4.DateTime{Time: time.Date(year, time.Month(1), 1, 0, 0, 0, 0, time.UTC)},
-			"yearTo":   githubv4.DateTime{Time: time.Date(year, time.Month(12), 31, 23, 59, 59, 59, time.UTC)},
+			"username": githubv4.String(userName),
+			"yearFrom": githubv4.DateTime{Time: time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)},
+			"yearTo":   githubv4.DateTime{Time: time.Date(year, time.December, 31, 23, 59, 59, 59, time.UTC)},
 		}
 		err := client.Query(ctx, &q, v)
 		if err != nil {
@@ -99,7 +96,6 @@ func (gc *gitHubClient) GetContributions(ctx context.Context, userName string, s
 
 		r = append(r, model.Contribution{
 			Year:        year,
-			CommitCount: int(q.User.ContributionsCollection.TotalCommitContributions),
 			IssueCount:  int(q.User.ContributionsCollection.TotalIssueContributions),
 			PRCount:     int(q.User.ContributionsCollection.TotalPullRequestContributions),
 			ReviewCount: int(q.User.ContributionsCollection.TotalPullRequestReviewContributions),

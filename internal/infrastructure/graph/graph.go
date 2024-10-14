@@ -19,20 +19,15 @@ type graph struct{}
 
 func NewGraphClient() repository.GraphClient { return &graph{} }
 
-func (g *graph) RenderContributionGraphEachYears(data []model.Contribution, outputFile string) error {
+func (g *graph) RenderContributionByYears(data []model.Contribution, outputFile string) error {
 	p := plot.New()
 	p.X.Label.Text = "Year"
 	p.Y.Label.Text = "Contributions"
 
-	commits := make(plotter.XYs, 0, len(data))
 	issues := make(plotter.XYs, 0, len(data))
 	prs := make(plotter.XYs, 0, len(data))
 	reviews := make(plotter.XYs, 0, len(data))
 	for _, v := range data {
-		commits = append(commits, plotter.XY{
-			X: float64(v.Year),
-			Y: float64(v.CommitCount),
-		})
 		issues = append(issues, plotter.XY{
 			X: float64(v.Year),
 			Y: float64(v.IssueCount),
@@ -47,7 +42,6 @@ func (g *graph) RenderContributionGraphEachYears(data []model.Contribution, outp
 		})
 	}
 	err := plotutil.AddLinePoints(p,
-		"commits", commits,
 		"issues", issues,
 		"PRs", prs,
 		"reviews", reviews,
