@@ -21,12 +21,12 @@ func (uc *createContributionGraph) Execute(ctx context.Context, accessToken stri
 	gc := github.NewGitHubClient(accessToken)
 	r, err := gc.GetContributionsEachYears(ctx, username)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	err = graph.RenderContributionGraphEachYears(r, output)
+	err = graph.NewGraphClient().RenderContributionGraphEachYears(r, output)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	return nil
 }
