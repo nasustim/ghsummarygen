@@ -2,8 +2,8 @@ package graph
 
 import (
 	"bytes"
-	"io/ioutil"
 	"math"
+	"os"
 
 	"github.com/nasustim/ghsummarygen/internal/domain/model"
 	"github.com/nasustim/ghsummarygen/internal/domain/repository"
@@ -22,34 +22,38 @@ func NewGraphClient() repository.GraphClient { return &graph{} }
 func (g *graph) RenderContributionGraphEachYears(data []model.Contribution, outputFile string) error {
 	p := plot.New()
 	p.X.Label.Text = "Year"
-	p.Y.Label.Text = "Contribution count"
+	p.Y.Label.Text = "Contributions"
 
-	ptcc := make(plotter.XYs, len(data))
-	ptic := make(plotter.XYs, len(data))
-	ptprc := make(plotter.XYs, len(data))
-	ptprrc := make(plotter.XYs, len(data))
-	for i, v := range data {
-		ptcc[i].X = float64(v.Year)
-		ptcc[i].Y = float64(v.TotalCommitContributions)
-
-		ptic[i].X = float64(v.Year)
-		ptic[i].Y = float64(v.TotalIssueContributions)
-
-		ptprc[i].X = float64(v.Year)
-		ptprc[i].Y = float64(v.TotalPullRequestContributions)
-
-		ptprrc[i].X = float64(v.Year)
-		ptprrc[i].Y = float64(v.TotalPullRequestReviewContributions)
-
+	commits := make(plotter.XYs, 0, len(data))
+	issues := make(plotter.XYs, 0, len(data))
+	prs := make(plotter.XYs, 0, len(data))
+	reviews := make(plotter.XYs, 0, len(data))
+	for _, v := range data {
+		commits = append(commits, plotter.XY{
+			X: float64(v.Year),
+			Y: float64(v.CommitCount),
+		})
+		issues = append(issues, plotter.XY{
+			X: float64(v.Year),
+			Y: float64(v.IssueCount),
+		})
+		prs = append(prs, plotter.XY{
+			X: float64(v.Year),
+			Y: float64(v.PRCount),
+		})
+		reviews = append(reviews, plotter.XY{
+			X: float64(v.Year),
+			Y: float64(v.ReviewCount),
+		})
 	}
 	err := plotutil.AddLinePoints(p,
-		"commits", ptcc,
-		"issues", ptic,
-		"PRs", ptprc,
-		"reviews", ptprrc,
+		"commits", commits,
+		"issues", issues,
+		"PRs", prs,
+		"reviews", reviews,
 	)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	size := 20 * vg.Centimeter
@@ -61,7 +65,7 @@ func (g *graph) RenderContributionGraphEachYears(data []model.Contribution, outp
 		return err
 	}
 
-	if err := ioutil.WriteFile(outputFile, out.Bytes(), 0644); err != nil {
+	if err := os.WriteFile(outputFile, out.Bytes(), 0644); err != nil {
 		return err
 	}
 

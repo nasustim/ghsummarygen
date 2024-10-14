@@ -1,9 +1,10 @@
 package model
 
 type Contribution struct {
-	Year                                int
-	TotalCommitContributions            int
-	TotalIssueContributions             int
-	TotalPullRequestContributions       int
-	TotalPullRequestReviewContributions int
+	Year int
+
+	CommitCount int
+	IssueCount  int
+	PRCount     int
+	ReviewCount int
 }

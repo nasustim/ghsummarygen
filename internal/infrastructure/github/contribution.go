@@ -21,8 +21,6 @@ func NewGitHubClient(accessToken string) repository.GitHubClient {
 	}
 }
 
-const DATETIME_LAYOUT_ISO8601 string = "2006-01-02T15:04:05+09:00"
-
 func (gc *gitHubClient) auth(ctx context.Context) *githubv4.Client {
 	client := githubv4.NewClient(
 		oauth2.NewClient(
@@ -91,8 +89,8 @@ func (gc *gitHubClient) GetContributions(ctx context.Context, userName string, s
 	for year := startYear; year <= endYear; year++ {
 		v := map[string]interface{}{
 			"userName": githubv4.String(userName),
-			"yearFrom": githubv4.DateTime{time.Date(year, time.Month(1), 1, 0, 0, 0, 0, time.Local)},
-			"yearTo":   githubv4.DateTime{time.Date(year, time.Month(12), 31, 23, 59, 59, 59, time.Local)},
+			"yearFrom": githubv4.DateTime{Time: time.Date(year, time.Month(1), 1, 0, 0, 0, 0, time.UTC)},
+			"yearTo":   githubv4.DateTime{Time: time.Date(year, time.Month(12), 31, 23, 59, 59, 59, time.UTC)},
 		}
 		err := client.Query(ctx, &q, v)
 		if err != nil {
@@ -100,11 +98,11 @@ func (gc *gitHubClient) GetContributions(ctx context.Context, userName string, s
 		}
 
 		r = append(r, model.Contribution{
-			Year:                                year,
-			TotalCommitContributions:            int(q.User.ContributionsCollection.TotalCommitContributions),
-			TotalIssueContributions:             int(q.User.ContributionsCollection.TotalIssueContributions),
-			TotalPullRequestContributions:       int(q.User.ContributionsCollection.TotalPullRequestContributions),
-			TotalPullRequestReviewContributions: int(q.User.ContributionsCollection.TotalPullRequestReviewContributions),
+			Year:        year,
+			CommitCount: int(q.User.ContributionsCollection.TotalCommitContributions),
+			IssueCount:  int(q.User.ContributionsCollection.TotalIssueContributions),
+			PRCount:     int(q.User.ContributionsCollection.TotalPullRequestContributions),
+			ReviewCount: int(q.User.ContributionsCollection.TotalPullRequestReviewContributions),
 		})
 	}
 
