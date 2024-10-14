@@ -5,22 +5,26 @@ import (
 	"sort"
 	"time"
 
+	"github.com/nasustim/ghsummarygen/internal/domain/model"
+	"github.com/nasustim/ghsummarygen/internal/domain/repository"
 	"github.com/pkg/errors"
 	"github.com/shurcooL/githubv4"
 	"golang.org/x/oauth2"
 )
 
-const DATETIME_LAYOUT_ISO8601 string = "2006-01-02T15:04:05+09:00"
-
-type Contributions struct {
-	Year                                int
-	TotalCommitContributions            int
-	TotalIssueContributions             int
-	TotalPullRequestContributions       int
-	TotalPullRequestReviewContributions int
+type gitHubClient struct {
+	AccessToken string
 }
 
-func (gc *gitHubClient) GetContributionsEachYears(ctx context.Context, userName string) ([]Contributions, error) {
+func NewGitHubClient(accessToken string) repository.GitHubClient {
+	return &gitHubClient{
+		AccessToken: accessToken,
+	}
+}
+
+const DATETIME_LAYOUT_ISO8601 string = "2006-01-02T15:04:05+09:00"
+
+func (gc *gitHubClient) GetContributionsEachYears(ctx context.Context, userName string) ([]model.Contribution, error) {
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: gc.AccessToken},
 	)
@@ -59,7 +63,7 @@ func (gc *gitHubClient) GetContributionsEachYears(ctx context.Context, userName 
 		} `graphql:"user(login: $userName)"`
 	}
 
-	r := make([]Contributions, len(contributionYearsList))
+	r := make([]model.Contribution, len(contributionYearsList))
 	for i, v := range contributionYearsList {
 		year := int(v)
 
@@ -74,7 +78,7 @@ func (gc *gitHubClient) GetContributionsEachYears(ctx context.Context, userName 
 			return nil, errors.Wrap(err, "failed to Query")
 		}
 
-		r[i] = Contributions{
+		r[i] = model.Contribution{
 			Year:                                year,
 			TotalCommitContributions:            int(q.User.ContributionsCollection.TotalCommitContributions),
 			TotalIssueContributions:             int(q.User.ContributionsCollection.TotalIssueContributions),

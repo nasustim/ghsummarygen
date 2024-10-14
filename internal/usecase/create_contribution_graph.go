@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 
-	"github.com/nasustim/ghsummarygen/internal/repository/github"
-	"github.com/nasustim/ghsummarygen/internal/repository/graph"
+	"github.com/nasustim/ghsummarygen/internal/infrastructure/github"
+	"github.com/nasustim/ghsummarygen/internal/infrastructure/graph"
 )
 
 type CreateContributionGraph interface {
