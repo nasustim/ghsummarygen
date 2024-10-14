@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"math"
 
-	"github.com/nasustim/ghsummarygen/internal/github_client"
+	"github.com/nasustim/ghsummarygen/internal/repository/github"
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
 	"gonum.org/v1/plot/plotutil"
@@ -14,7 +14,7 @@ import (
 	"gonum.org/v1/plot/vg/vgsvg"
 )
 
-func RenderContributionGraphEachYears(data []github_client.Contributions, outputFile string) error {
+func RenderContributionGraphEachYears(data []github.Contributions, outputFile string) error {
 	p := plot.New()
 	p.X.Label.Text = "Year"
 	p.Y.Label.Text = "Contribution count"

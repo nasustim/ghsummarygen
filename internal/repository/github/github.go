@@ -1,4 +1,4 @@
-package github_client
+package github
 
 import "context"
 

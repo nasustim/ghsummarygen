@@ -5,8 +5,7 @@ import (
 	"errors"
 	"flag"
 
-	"github.com/nasustim/ghsummarygen/internal/github_client"
-	"github.com/nasustim/ghsummarygen/internal/graph"
+	"github.com/nasustim/ghsummarygen/internal/usecase"
 )
 
 type Args struct {
@@ -36,13 +35,7 @@ func main() {
 		panic(errors.New("user_name is required"))
 	}
 
-	gc := github_client.NewGitHubClient(args.accessToken)
-	r, err := gc.GetContributionsEachYears(ctx, args.userName)
-	if err != nil {
-		panic(err)
-	}
-
-	err = graph.RenderContributionGraphEachYears(r, args.outputFile)
+	err := usecase.NewCreateContributionGraph().Execute(ctx, args.accessToken, args.userName, args.outputFile)
 	if err != nil {
 		panic(err)
 	}
