@@ -7,5 +7,6 @@ import (
 )
 
 type GitHubClient interface {
-	GetContributionsEachYears(ctx context.Context, userName string) ([]model.Contribution, error)
+	GetYearAccountStarted(ctx context.Context, username string) (int, error)
+	GetContributions(ctx context.Context, userName string, startYear int, endYear int) ([]model.Contribution, error)
 }

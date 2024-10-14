@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"time"
 
 	"github.com/nasustim/ghsummarygen/internal/infrastructure/github"
 	"github.com/nasustim/ghsummarygen/internal/infrastructure/graph"
@@ -19,7 +20,13 @@ func NewCreateContributionGraph() CreateContributionGraph {
 
 func (uc *createContributionGraph) Execute(ctx context.Context, accessToken string, username string, output string) error {
 	gc := github.NewGitHubClient(accessToken)
-	r, err := gc.GetContributionsEachYears(ctx, username)
+
+	startedAt, err := gc.GetYearAccountStarted(ctx, username)
+	if err != nil {
+		return err
+	}
+
+	r, err := gc.GetContributions(ctx, username, startedAt, time.Now().Year())
 	if err != nil {
 		return err
 	}
