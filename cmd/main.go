@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"context"
@@ -24,7 +24,7 @@ func init() {
 	flag.StringVar(&args.outputFile, "out", "./graph.svg", "output file")
 }
 
-func main() {
+func Exec() {
 	ctx := context.Background()
 	flag.Parse()
 
