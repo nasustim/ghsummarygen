@@ -7,7 +7,7 @@ toolchain go1.25.4
 require (
 	github.com/pkg/errors v0.9.1
 	github.com/shurcooL/githubv4 v0.0.0-20240120211514-18a1ae0e79dc
-	golang.org/x/oauth2 v0.32.0
+	golang.org/x/oauth2 v0.33.0
 	gonum.org/v1/plot v0.16.0
 )
 
