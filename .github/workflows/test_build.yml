@@ -15,7 +15,7 @@ jobs:
           - build_darwin_arm64
           - build_linux_amd64
     steps:
-      - uses: actions/checkout@v4.4.0
+      - uses: actions/checkout@v7.0.1
       - uses: actions/setup-go@v5.6.0
         with:
           go-version-file: go.mod
