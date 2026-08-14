@@ -2,7 +2,7 @@ module github.com/nasustim/ghsummarygen
 
 go 1.25.0
 
-toolchain go1.26.5
+toolchain go1.26.6
 
 require (
 	github.com/pkg/errors v0.9.1
